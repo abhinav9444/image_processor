@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+
+- Added configurable input, output, and report paths in `config.json`
+- Added `--input-dir` and `--output-dir` CLI options
+- CLI paths override configured paths
+- Preserved legacy positional input/output usage
+- Updated README with path configuration examples
+
 ## 1.0.0
 
 - Initial release
