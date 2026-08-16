@@ -1,0 +1,38 @@
+{
+    "output_format": "WEBP",
+    "quality": 85,
+    "fit_mode": "contain",
+    "background": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+    },
+    "standard_resolutions": {
+        "tiny": [100, 100],
+        "thumbnail": [150, 150],
+        "small": [300, 300],
+        "card": [400, 400],
+        "medium": [600, 600],
+        "detail": [800, 800],
+        "large": [1200, 1200]
+    },
+    "enabled_resolutions": [
+        "thumbnail",
+        "card",
+        "detail"
+    ],
+    "custom_resolutions": [],
+    "enhancement": {
+        "brightness": 1.0,
+        "contrast": 1.0,
+        "saturation": 1.0,
+        "sharpness": 1.0,
+        "noise_reduction": 0,
+        "sharpen": 0
+    },
+    "quality_check": {
+        "minimum_width": 300,
+        "minimum_height": 300,
+        "minimum_quality_score": 5.0
+    }
+}
