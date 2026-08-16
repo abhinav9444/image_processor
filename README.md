@@ -1,74 +1,124 @@
 # E-Commerce Image Processor
 
-A lightweight, configurable Python image-processing pipeline for **local e-commerce and grocery product catalogs**.
+A lightweight, configurable Python image-processing pipeline for local e-commerce and grocery product catalogs.
 
 It takes inconsistent source images—different dimensions, formats, quality levels, orientations, and filenames—and turns them into consistent, optimized assets ready for your app.
 
 > Built with Python + Pillow. Duplicate detection is intentionally **not included**.
 
-## Why use it?
-
-Product images collected from different sources rarely have consistent:
-
-- Resolution
-- Aspect ratio
-- Format
-- Compression
-- Orientation
-- Naming
-- Background/canvas
-- Visual quality
-
-This tool provides one repeatable pipeline for preparing those assets before they enter your application.
-
 ## Features
 
-### Image normalization
-- Resize images to standard app resolutions
-- Custom width × height support
+- Recursive batch processing
+- Standard resolution presets
+- Custom width × height resolutions
 - Generate multiple resolutions in one run
 - `contain`, `cover`, and `stretch` fitting modes
-- Preserve proportions without distortion when using `contain`/`cover`
-- EXIF orientation correction
-- Transparency handling
-- Configurable background color
-- Filename normalization
-
-### Image optimization
-- WebP output
-- JPEG output
-- PNG output
-- AVIF output when supported by the installed Pillow build
+- JPEG / PNG / WebP / AVIF output
 - Configurable output quality
-- Metadata stripping by saving generated assets without source metadata
-- Optimized PNG/JPEG/WebP encoding
-- File-size and compression statistics
-
-### Image enhancement
-- Brightness adjustment
-- Contrast adjustment
-- Saturation adjustment
-- Sharpness adjustment
-- Optional noise reduction
-- Optional post-processing sharpening
-
-### Quality checks
-- Minimum source width check
-- Minimum source height check
-- Basic low-detail/blurriness warning
-- Processing warnings in console/logs
-- Failed-image logging
-
-### Batch processing
-- Recursive folder scanning
-- Process hundreds or thousands of images
-- Generate separate output directories per resolution
+- EXIF orientation correction
+- Transparency/background handling
+- Brightness, contrast, saturation and sharpness adjustment
+- Optional noise reduction and sharpening
+- Minimum-resolution and basic quality warnings
+- Filename normalization
+- Source metadata not copied into generated assets
 - Dry-run mode
+- Processing logs
 - JSON processing report
-- Persistent processing log
+- Storage/compression statistics
+- Configurable input/output/report paths
+- CLI path overrides
+- Windows, PowerShell, Linux and macOS installation scripts
+- GitHub Actions CI
 
-### Resolution system
-Built-in presets:
+## Requirements
+
+- Python 3.10+
+- Pillow
+
+## Quick start
+
+Clone the repository and install dependencies.
+
+### Windows
+
+```bat
+install.bat
+```
+
+or:
+
+```powershell
+.\install.ps1
+```
+
+### Linux/macOS
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+Then:
+
+```bash
+python image_processor.py --list-resolutions
+python image_processor.py
+```
+
+## Input and output paths
+
+You can point the processor at **any folders on your computer**. You do not need to copy images into the repository.
+
+### Option 1 — command-line paths
+
+```bash
+python image_processor.py --input-dir "D:/MyStore/product-images" --output-dir "D:/MyStore/processed-images"
+```
+
+Windows example:
+
+```powershell
+python image_processor.py --input-dir "C:/Users/Abhinav/Pictures/products" --output-dir "D:/Ecommerce/processed"
+```
+
+The command-line paths override `config.json`.
+
+### Option 2 — configure paths once
+
+Set the `paths` section in `config.json`:
+
+```json
+"paths": {
+    "input_dir": "D:/MyStore/product-images",
+    "output_dir": "D:/MyStore/processed-images",
+    "report_file": "D:/MyStore/processed-images/processing_report.json"
+}
+```
+
+Then simply run:
+
+```bash
+python image_processor.py
+```
+
+### Path priority
+
+```text
+CLI --input-dir / --output-dir
+        ↓
+config.json paths
+        ↓
+./input and ./output
+```
+
+The existing positional syntax remains supported:
+
+```bash
+python image_processor.py input --output output
+```
+
+## Standard resolutions
 
 | Preset | Resolution | Typical use |
 |---|---:|---|
@@ -80,193 +130,47 @@ Built-in presets:
 | `detail` | 800×800 | Product detail |
 | `large` | 1200×1200 | High-resolution view |
 
-You can also define your own standard presets in `config.json`.
-
-### Intentionally excluded
-
-**Duplicate detection is not implemented.**
-
----
-
-## Requirements
-
-- Python **3.10+**
-- Pillow
-
-Pillow provides prebuilt wheels for major operating systems, so the normal installation path does not require manually compiling image libraries. See the Pillow installation documentation for platform-specific details.
-
----
-
-## Quick Start
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/ecommerce-image-processor.git
-cd ecommerce-image-processor
-```
-
-### 2. Install automatically
-
-#### Windows
-
-```bat
-install.bat
-```
-
-Or PowerShell:
-
-```powershell
-.\install.ps1
-```
-
-#### Linux/macOS
-
-```bash
-chmod +x install.sh
-./install.sh
-```
-
-The installer:
-
-1. Detects Python
-2. Creates `.venv`
-3. Upgrades pip
-4. Installs dependencies from `requirements.txt`
-
-### 3. Put images into `input/`
-
-Example:
-
-```text
-input/
-├── vegetables/
-│   ├── Tomato.JPG
-│   ├── potato image.png
-│   └── Green Capsicum.jpeg
-├── fruits/
-│   ├── Apple.jpg
-│   └── Banana.png
-└── grains/
-    └── rice.webp
-```
-
-### 4. Process them
-
-```bash
-python image_processor.py input --output output
-```
-
-On Windows after installation you can also use:
-
-```bat
-run.bat input --output output
-```
-
-On Linux/macOS:
-
-```bash
-./run.sh input --output output
-```
-
----
-
-## Default output
-
-The default configuration generates:
-
-```text
-output/
-├── thumbnail/
-├── card/
-├── detail/
-└── image_processor.log
-
-processing_report.json
-```
-
-For example:
-
-```text
-input/vegetables/Tomato.JPG
-
-        ↓
-
-output/
-└── card/
-    └── tomato_card.webp
-
-output/
-└── detail/
-    └── tomato_detail.webp
-
-output/
-└── thumbnail/
-    └── tomato_thumbnail.webp
-```
-
-The original files in `input/` are never modified.
-
----
-
-## Resolution selection
-
-### Use configured default resolutions
-
-```bash
-python image_processor.py input --output output
-```
-
-Default:
-
-```text
-thumbnail → 150×150
-card      → 400×400
-detail    → 800×800
-```
-
-### List available presets
+List presets:
 
 ```bash
 python image_processor.py --list-resolutions
 ```
 
-### Generate one standard resolution
+Generate configured defaults:
 
 ```bash
-python image_processor.py input --resolution card
+python image_processor.py
 ```
 
-### Generate multiple standard resolutions
+One standard resolution:
 
 ```bash
-python image_processor.py input \
-  --resolutions thumbnail card detail
+python image_processor.py --resolution card
 ```
 
-### Generate a custom resolution
+Multiple standard resolutions:
 
 ```bash
-python image_processor.py input \
-  --custom-resolution 512 512
+python image_processor.py --resolutions thumbnail card detail
 ```
 
-### Generate a rectangular custom resolution
+Custom resolution:
 
 ```bash
-python image_processor.py input \
-  --custom-resolution 1200 800
+python image_processor.py --custom-resolution 512 512
 ```
 
-### Combine standard + custom resolution
+Rectangular custom resolution:
 
 ```bash
-python image_processor.py input \
-  --resolutions thumbnail card detail \
-  --custom-resolution 512 512
+python image_processor.py --custom-resolution 1200 800
 ```
 
----
+Combine standard and custom resolutions:
+
+```bash
+python image_processor.py --resolutions thumbnail card detail --custom-resolution 512 512
+```
 
 ## Fit modes
 
@@ -275,92 +179,74 @@ python image_processor.py input \
 Keeps the entire product visible and adds the configured background when required.
 
 ```bash
-python image_processor.py input --fit contain
+python image_processor.py --fit contain
 ```
-
-Recommended for grocery/product catalogs.
 
 ### `cover`
 
-Fills the target dimensions completely and crops the image if necessary.
+Fills the target dimensions and crops when necessary.
 
 ```bash
-python image_processor.py input --fit cover
+python image_processor.py --fit cover
 ```
-
-Useful when your UI requires every card to be completely filled.
 
 ### `stretch`
 
-Forces the image into the target dimensions.
+Forces the image into the target dimensions and may distort it.
 
 ```bash
-python image_processor.py input --fit stretch
+python image_processor.py --fit stretch
 ```
-
-Generally not recommended for product photography because it can distort objects.
-
----
 
 ## Output formats
 
-### WebP — recommended default
+WebP:
 
 ```bash
-python image_processor.py input --format WEBP --quality 85
+python image_processor.py --format WEBP --quality 85
 ```
 
-### JPEG
+JPEG:
 
 ```bash
-python image_processor.py input --format JPEG --quality 90
+python image_processor.py --format JPEG --quality 90
 ```
 
-### PNG
+PNG:
 
 ```bash
-python image_processor.py input --format PNG
+python image_processor.py --format PNG
 ```
 
-### AVIF
+AVIF:
 
 ```bash
-python image_processor.py input --format AVIF --quality 80
+python image_processor.py --format AVIF --quality 80
 ```
 
-AVIF support depends on the Pillow build and environment.
-
----
+AVIF support depends on the installed Pillow build.
 
 ## Configuration
 
-Most users should configure the project through `config.json`.
+The main configuration file is `config.json`.
 
-Example:
+Recommended starting configuration for a grocery/e-commerce app:
 
 ```json
 {
+    "paths": {
+        "input_dir": "D:/MyStore/product-images",
+        "output_dir": "D:/MyStore/processed-images",
+        "report_file": "D:/MyStore/processed-images/processing_report.json"
+    },
     "output_format": "WEBP",
     "quality": 85,
     "fit_mode": "contain",
-
-    "background": {
-        "r": 255,
-        "g": 255,
-        "b": 255
-    },
-
-    "enabled_resolutions": [
-        "thumbnail",
-        "card",
-        "detail"
-    ]
+    "enabled_resolutions": ["thumbnail", "card", "detail"]
 }
 ```
 
-### Change standard resolutions
-
-For example:
+You can change standard resolutions directly in `config.json`:
 
 ```json
 "standard_resolutions": {
@@ -370,15 +256,7 @@ For example:
 }
 ```
 
-Then:
-
-```bash
-python image_processor.py input
-```
-
-will automatically use the new values.
-
-### Add custom resolutions to config
+Add persistent custom resolutions:
 
 ```json
 "custom_resolutions": [
@@ -387,71 +265,26 @@ will automatically use the new values.
 ]
 ```
 
-These are generated in addition to the enabled standard resolutions.
-
----
-
 ## Image enhancement
 
-The default configuration deliberately performs no aggressive enhancement.
-
-### Brightness
+The default configuration is intentionally conservative.
 
 ```json
-"brightness": 1.05
+"enhancement": {
+    "brightness": 1.0,
+    "contrast": 1.0,
+    "saturation": 1.0,
+    "sharpness": 1.0,
+    "noise_reduction": 0,
+    "sharpen": 0
+}
 ```
 
-### Contrast
-
-```json
-"contrast": 1.05
-```
-
-### Saturation
-
-```json
-"saturation": 1.05
-```
-
-### Sharpness
-
-```json
-"sharpness": 1.10
-```
-
-Keep these values close to `1.0` to avoid unnatural product images.
-
-### Noise reduction
-
-```json
-"noise_reduction": 1
-```
-
-Valid range:
-
-```text
-0–5
-```
-
-### Additional sharpening
-
-```json
-"sharpen": 1
-```
-
-Valid range:
-
-```text
-0–5
-```
-
----
+Keep the values near `1.0` to avoid unnatural product images.
 
 ## Quality checks
 
-The processor can warn about source images that are too small or potentially low quality.
-
-Example:
+The processor warns about source images that may be unsuitable for high-quality app assets:
 
 ```json
 "quality_check": {
@@ -461,199 +294,79 @@ Example:
 }
 ```
 
-These checks **warn rather than silently delete or reject your originals**.
-
----
+These checks warn rather than delete or modify your originals.
 
 ## Dry run
 
-Preview what would happen without creating processed images:
+Preview processing without creating generated images:
 
 ```bash
-python image_processor.py input \
-  --output output \
-  --dry-run
+python image_processor.py --dry-run
 ```
 
-This is recommended before processing a large repository.
+## Output
 
----
+For the default configuration:
+
+```text
+output/
+├── thumbnail/
+├── card/
+├── detail/
+└── image_processor.log
+```
+
+The report is written to the configured `paths.report_file` location.
+
+Original input files are never modified.
 
 ## Processing report
 
-After a run, the tool creates:
+The JSON report contains:
 
-```text
-processing_report.json
-```
-
-Example:
-
-```json
-{
-    "processing": {
-        "processed": 250,
-        "failed": 2,
-        "warnings": 11
-    },
-    "storage": {
-        "original_mb": 842.5,
-        "output_mb": 116.3,
-        "saved_mb": 726.2,
-        "compression_percentage": 86.2
-    }
-}
-```
-
-This lets you measure how much storage/bandwidth optimization the pipeline achieved.
-
----
-
-## Logs
-
-Processing logs are written to:
-
-```text
-output/image_processor.log
-```
-
-The log includes:
-
-- Processed files
-- Generated assets
-- Resolution
-- Output size
-- Warnings
-- Errors
-
----
-
-## Recommended grocery-app configuration
-
-For a typical local grocery/e-commerce application, a good starting point is:
-
-```json
-{
-    "output_format": "WEBP",
-    "quality": 85,
-    "fit_mode": "contain",
-    "enabled_resolutions": [
-        "thumbnail",
-        "card",
-        "detail"
-    ]
-}
-```
-
-This gives:
-
-```text
-150×150  → list/search
-400×400  → product cards
-800×800  → product detail
-```
-
-Keep the original images outside the generated output tree so you can regenerate assets later if your app's requirements change.
-
----
-
-## Architecture
-
-```text
-                    SOURCE IMAGE
-                         │
-                         ▼
-                ┌─────────────────┐
-                │ EXIF correction │
-                └────────┬────────┘
-                         ▼
-                ┌─────────────────┐
-                │ Quality checks  │
-                └────────┬────────┘
-                         ▼
-                ┌─────────────────┐
-                │ Mode / Alpha    │
-                │ normalization   │
-                └────────┬────────┘
-                         ▼
-                ┌─────────────────┐
-                │ Enhancement     │
-                └────────┬────────┘
-                         ▼
-                ┌─────────────────┐
-                │ Resize / Fit    │
-                └────────┬────────┘
-                         │
-            ┌────────────┼────────────┐
-            ▼            ▼            ▼
-        Thumbnail      Card         Detail
-        150×150       400×400       800×800
-            │            │            │
-            └────────────┼────────────┘
-                         ▼
-                ┌─────────────────┐
-                │ Format + Quality│
-                │ optimization    │
-                └────────┬────────┘
-                         ▼
-                    APP-READY
-                      ASSETS
-```
-
----
+- processed count
+- failed count
+- warning count
+- output format
+- quality
+- fit mode
+- generated resolutions
+- original storage size
+- output storage size
+- estimated storage reduction
+- processing time
 
 ## Project structure
 
 ```text
-ecommerce-image-processor/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
+image_processor/
+├── .github/workflows/ci.yml
 ├── input/
-│   └── .gitkeep
 ├── output/
-│   └── .gitkeep
 ├── tests/
-│   └── test_processor.py
 ├── config.json
 ├── image_processor.py
+├── requirements.txt
 ├── install.bat
 ├── install.ps1
 ├── install.sh
-├── requirements.txt
 ├── run.bat
 ├── run.sh
-├── .gitignore
+├── README.md
 ├── CHANGELOG.md
 ├── LICENSE
-└── README.md
+└── .gitignore
 ```
-
----
 
 ## Development
 
-Create the environment:
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it:
-
-### Windows
-
-```bat
-.venv\Scripts\activate
-```
-
-### Linux/macOS
-
-```bash
-source .venv/bin/activate
-```
-
-Install:
+Activate it and install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -665,51 +378,34 @@ Run tests:
 python -m unittest discover -s tests -v
 ```
 
----
+## Recommended workflow for your e-commerce image repository
 
-## Security and privacy
+Keep original/source assets in a separate location, then point `input_dir` to that directory and `output_dir` to your app's generated asset directory.
 
-The processor runs locally and does not require an external image-processing API.
+A practical setup is:
 
-Generated images are written to the configured local output directory.
+```text
+Original image repository
+        ↓
+Image Processor
+        ↓
+┌───────────────┬────────────┬──────────────┐
+│ 150×150       │ 400×400    │ 800×800      │
+│ thumbnails    │ product    │ detail       │
+│               │ cards      │ images       │
+└───────────────┴────────────┴──────────────┘
+```
 
-Source metadata is not copied into generated assets.
+For most grocery/product catalogs, `WebP + quality 85 + contain` is a good starting point.
 
-Do not commit private product images, credentials, API keys, or other sensitive files.
+## Duplicate detection
 
----
+Duplicate and near-duplicate detection is intentionally **not implemented** in this project.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
-
----
+MIT License. See `LICENSE`.
 
 ## Roadmap
 
-Potential future additions:
-
-- Automatic background removal
-- Product/object centering
-- AI-assisted product detection
-- CLI progress bar
-- GUI/web interface
-- Preset profiles for different storefronts
-- Image quality scoring with a dedicated model
-- Cloud/object-storage integration
-
-Duplicate detection is intentionally outside the current scope.
-
----
-
-## Contributing
-
-Pull requests are welcome.
-
-For larger changes, open an issue first to discuss the proposed approach.
-
----
-
-## Author
-
-Built as a reusable image-preprocessing utility for e-commerce applications.
+Potential future additions include automatic background removal, product/object centering, AI-assisted product detection, GUI/web interface, storefront-specific presets and cloud/object-storage integration.
