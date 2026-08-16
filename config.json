@@ -1,4 +1,9 @@
 {
+    "paths": {
+        "input_dir": "./input",
+        "output_dir": "./output",
+        "report_file": "./processing_report.json"
+    },
     "output_format": "WEBP",
     "quality": 85,
     "fit_mode": "contain",
